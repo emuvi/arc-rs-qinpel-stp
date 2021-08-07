@@ -25,12 +25,19 @@ fn get_arch<'a>() -> &'a str {
     }
 }
 
+use std::io::Cursor;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+async fn download(origin: String, destiny: String) -> Result<()> {
+    let response = reqwest::get(origin).await?;
+    let mut file = std::fs::File::create(destiny)?;
+    let mut content =  Cursor::new(response.bytes().await?);
+    std::io::copy(&mut content, &mut file)?;
+    Ok(())
+}
+
 fn setup(path: String) {
-    println!("{}", path);
-    // let mut client = reqwest::Client::new();
-    // let mut request = client.get(path).send();
-    // let mut out = File::create("rustup-init.sh").expect("failed to create file");
-    // io::copy(&mut request, &mut out).expect("failed to copy content");
+    // TODO
 }
 
 fn setup_app(name: &str) {
@@ -41,7 +48,8 @@ fn setup_cmd(os: &str, arch: &str, name: &str) {
     setup(format!("{}/{}/{}/{}/{}", URL_ROOT, "cmds", os, arch, name));
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     println!("Qinpel Setup starting...");
     let os = get_os();
     let arch = get_arch();
@@ -65,6 +73,8 @@ fn main() {
         } else if argument.starts_with("cmds/") {
             println!("Setting up command: {}.", name);
             setup_cmd(os, arch, name);
+        } else if argument.starts_with("tes") {
+            download(String::from("http://www.uol.com.br/"), String::from("./uol")).await;
         } else {
             println!(
                 "Error: Can not setup this mal formed argument: {}.",
