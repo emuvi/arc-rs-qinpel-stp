@@ -3,36 +3,43 @@ use std::fs::File;
 use std::io;
 extern crate reqwest;
 
-fn get_os() -> String {
+const URL_ROOT: &str = "http://www.pointel.com.br/qinpel";
+
+fn get_os<'a>() -> &'a str {
     let os = env::consts::OS;
     if os.len() < 3 {
         panic!("Error: Operation system is not supported.");
     }
     let result = &os[..3];
     match result {
-        "lin" | "mac" | "win" => String::from(result),
+        "lin" | "mac" | "win" => result,
         _ => panic!("Error: Operation system is not supported."),
     }
 }
 
-fn get_arch() -> String {
+fn get_arch<'a>() -> &'a str {
     match std::mem::size_of::<&char>() {
-        4 => String::from("32"),
-        8 => String::from("64"),
+        4 => "32",
+        8 => "64",
         _ => panic!("Error: System architecture is not supported."),
     }
 }
 
 fn setup(path: String) {
-    let mut client = reqwest::Client::new();
-    let mut request = client.get(path).send();
+    println!("{}", path);
+    // let mut client = reqwest::Client::new();
+    // let mut request = client.get(path).send();
     // let mut out = File::create("rustup-init.sh").expect("failed to create file");
     // io::copy(&mut request, &mut out).expect("failed to copy content");
 }
 
-fn setupApp(name: &String) {}
+fn setup_app(name: &str) {
+    setup(format!("{}/{}/{}", URL_ROOT, "apps", name));
+}
 
-fn setupCmd(os: &String, arch: &String, name: &String) {}
+fn setup_cmd(os: &str, arch: &str, name: &str) {
+    setup(format!("{}/{}/{}/{}/{}", URL_ROOT, "cmds", os, arch, name));
+}
 
 fn main() {
     println!("Qinpel Setup starting...");
@@ -45,18 +52,24 @@ fn main() {
             continue;
         }
         if argument.len() < 6 {
-            println!("Error: Can not setup. Mal formed argument: {}.", argument);
+            println!(
+                "Error: Can not setup this mal formed argument: {}.",
+                argument
+            );
             continue;
         }
-        let name = String::from(&argument[5..]);
+        let name = &argument[5..];
         if argument.starts_with("apps/") {
-            println!("Setting up application: {}", name);
-            setupApp(&name);
+            println!("Setting up application: {}.", name);
+            setup_app(name);
         } else if argument.starts_with("cmds/") {
-            println!("Setting up command: {}", name);
-            setupCmd(&os, &arch, &name);
+            println!("Setting up command: {}.", name);
+            setup_cmd(os, arch, name);
         } else {
-            println!("Error: Can not setup. Mal formed argument: {}.", argument);
+            println!(
+                "Error: Can not setup this mal formed argument: {}.",
+                argument
+            );
         }
     }
 }
