@@ -1,61 +1,45 @@
-use std::env;
-use std::fs::File;
-use std::io;
-extern crate reqwest;
+extern crate url;
 
-const URL_ROOT: &str = "http://www.pointel.com.br/qinpel";
+mod boss;
+mod data;
+mod files;
+mod utils;
 
-fn get_os<'a>() -> &'a str {
-    let os = env::consts::OS;
-    if os.len() < 3 {
-        panic!("Error: Operation system is not supported.");
-    }
-    let result = &os[..3];
-    match result {
-        "lin" | "mac" | "win" => result,
-        _ => panic!("Error: Operation system is not supported."),
-    }
-}
+const URL_MAIN: &str = "http://www.pointel.com.br/qinpel";
+const SEPARATOR: char = std::path::MAIN_SEPARATOR;
 
-fn get_arch<'a>() -> &'a str {
-    match std::mem::size_of::<&char>() {
-        4 => "32",
-        8 => "64",
-        _ => panic!("Error: System architecture is not supported."),
-    }
-}
+pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-use std::io::Cursor;
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-
-async fn download(origin: String, destiny: String) -> Result<()> {
-    let response = reqwest::get(origin).await?;
-    let mut file = std::fs::File::create(destiny)?;
-    let mut content =  Cursor::new(response.bytes().await?);
-    std::io::copy(&mut content, &mut file)?;
-    Ok(())
-}
-
-fn setup(path: String) {
-    // TODO
+fn setup(url_root: String, file_root: String) {
+    let url_path = url::Url::parse(&url_root).expect("Could not parse the url root.");
+    let current_dir = std::env::current_dir().expect("Could not retrieve the current dir.");
+    let destiny_path = current_dir.join(&file_root);
+    let temp_path = current_dir.join("tmp");
+    boss::Boss::new(url_path, destiny_path, temp_path).run();
 }
 
 fn setup_app(name: &str) {
-    setup(format!("{}/{}/{}", URL_ROOT, "apps", name));
+    let url_root = format!("{}/{}/{}/", URL_MAIN, "apps", name);
+    let file_root = format!("{}{}{}{}{}", "run", SEPARATOR, "apps", SEPARATOR, name);
+    setup(url_root, file_root);
 }
 
 fn setup_cmd(os: &str, arch: &str, name: &str) {
-    setup(format!("{}/{}/{}/{}/{}", URL_ROOT, "cmds", os, arch, name));
+    let url_root = format!("{}/{}/{}/{}/{}/", URL_MAIN, "cmds", os, arch, name);
+    let file_root = format!(
+        "{}{}{}{}{}{}{}{}{}",
+        "run", SEPARATOR, "cmds", SEPARATOR, os, SEPARATOR, arch, SEPARATOR, name
+    );
+    setup(url_root, file_root);
 }
 
-#[tokio::main]
-async fn main() {
+fn main() {
     println!("Qinpel Setup starting...");
-    let os = get_os();
-    let arch = get_arch();
+    let os = utils::get_os();
+    let arch = utils::get_arch();
     println!("Identified operation system: {}", os);
     println!("Identified system architecture: {}", arch);
-    for (index, argument) in env::args().enumerate() {
+    for (index, argument) in std::env::args().enumerate() {
         if index == 0 {
             continue;
         }
@@ -73,8 +57,6 @@ async fn main() {
         } else if argument.starts_with("cmds/") {
             println!("Setting up command: {}.", name);
             setup_cmd(os, arch, name);
-        } else if argument.starts_with("tes") {
-            download(String::from("http://www.uol.com.br/"), String::from("./uol")).await;
         } else {
             println!(
                 "Error: Can not setup this mal formed argument: {}.",
