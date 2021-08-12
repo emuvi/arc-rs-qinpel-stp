@@ -29,10 +29,7 @@ fn setup_app(name: &str) {
 
 fn setup_cmd(os: &str, arch: &str, name: &str) {
     let url_root = format!("{}/{}/{}/{}/{}/", URL_MAIN, "cmds", os, arch, name);
-    let file_root = format!(
-        "{}{}{}{}{}{}{}{}{}",
-        "run", SEPARATOR, "cmds", SEPARATOR, os, SEPARATOR, arch, SEPARATOR, name
-    );
+    let file_root = format!("{}{}{}{}{}", "run", SEPARATOR, "cmds", SEPARATOR, name);
     setup(url_root, file_root);
 }
 

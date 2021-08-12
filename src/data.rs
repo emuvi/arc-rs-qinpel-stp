@@ -11,7 +11,7 @@ pub struct IndexStp {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FileStp {
-  pub name: String,
+  pub path: String,
   pub verifier: String,
 }
 
