@@ -25,13 +25,13 @@ jobs:
           override: true
 
       - name: Build
-        run: cargo build --all --release && strip target/release/${{ github.repository.name }} && mv target/release/$${{ github.repository.name }} target/release/${{ github.repository.name }}_amd64
+        run: cargo build --all --release && strip target/release/qinpel-stp && mv target/release/qinpel-stp target/release/lin_64_qinpel-stp
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            target/release/${{ github.repository.name }}_amd64
+            target/release/lin_64_qinpel-stp
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
