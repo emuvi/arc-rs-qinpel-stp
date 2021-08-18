@@ -33,11 +33,8 @@ jobs:
       - name: Build Release Linux
         if: matrix.os == 'ubuntu-latest'
         run: |
-          cargo install cargo-deb
-          cargo deb
           strip target/release/qinpel-stp
           mkdir -p release
-          mv target/debian/*.deb ./release/lin_64_qinpel-stp.deb
           tar -C ./target/release/ -czvf ./release/lin_64_qinpel-stp.tar.gz ./qinpel-stp
           
       # Condition to only run this whenever the runner os is Windows
