@@ -1,36 +1,6 @@
 name: Release CI
 on: [push]
 jobs:
-  lin-64:
-    runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, '[Release]')"
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Install
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-      
-      - name: Build
-        run: |
-          cargo build --all --release
-          strip target/release/qinpel-stp
-          mkdir -p release
-          tar -C ./target/release/ -czvf ./release/lin_64_qinpel-stp.tar.gz ./qinpel-stp
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          files: ./release/*.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    
   mac-64:
     runs-on: macos-latest
     if: "contains(github.event.head_commit.message, '[Release]')"
@@ -41,6 +11,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: x86_64-apple-darwin
           profile: minimal
       
       - name: Build
@@ -61,6 +32,37 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
   
+  lin-64:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, '[Release]')"
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-unknown-linux-gnu
+          profile: minimal
+      
+      - name: Build
+        run: |
+          cargo build --all --release
+          strip target/release/qinpel-stp
+          mkdir -p release
+          tar -C ./target/release/ -czvf ./release/lin_64_qinpel-stp.tar.gz ./qinpel-stp
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          files: ./release/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    
   win-64:
     runs-on: windows-latest
     if: "contains(github.event.head_commit.message, '[Release]')"
@@ -71,6 +73,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: x86_64-pc-windows-msvc
           profile: minimal
       
       - name: Build
@@ -78,6 +81,36 @@ jobs:
           cargo build --all --release
           mkdir -p release
           tar -C ./target/release/ -czvf ./release/win_64_qinpel-stp.tar.gz ./qinpel-stp.exe
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          files: ./release/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    
+  win-32:
+    runs-on: windows-latest
+    if: "contains(github.event.head_commit.message, '[Release]')"
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: i686-pc-windows-msvc
+          profile: minimal
+      
+      - name: Build
+        run: |
+          cargo build --all --release
+          mkdir -p release
+          tar -C ./target/release/ -czvf ./release/win_32_qinpel-stp.tar.gz ./qinpel-stp.exe
 
       - name: Release
         uses: softprops/action-gh-release@v1
