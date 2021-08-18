@@ -1,37 +1,63 @@
-name: Rust
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-env:
-  CARGO_TERM_COLOR: always
-
+name: Release CI
+on: [push]
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  deploy:
+    # A strategy is used to define various build environments this job will run.
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    # Runs when the commit message contains "[Released]"
+    if: "contains(github.event.head_commit.message, '[Released]')"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - name: Install latest rust toolchain
+      - uses: actions/checkout@v2
+      
+      - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          default: true
-          override: true
-
+          profile: minimal
+      
       - name: Build
-        run: cargo build --all --release && strip target/release/qinpel-stp && mv target/release/qinpel-stp target/release/lin_64_qinpel-stp
+        run: cargo build --all --release
 
+      # Condition to only run this whenever the runner os is Mac
+      - name: Build Release Mac
+        if: matrix.os == 'macos-latest'
+        run: |
+          strip target/release/qinpel-stp
+          mkdir -p release
+          tar -C ./target/release/ -czvf ./release/mac_64_qinpel-stp.tar.gz ./qinpel-stp
+          
+      # Condition to only run this whenever the runner os is Ubuntu
+      - name: Build Release Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cargo install cargo-deb
+          cargo deb
+          strip target/release/qinpel-stp
+          mkdir -p release
+          mv target/debian/*.deb ./release/lin_64_qinpel-stp.deb
+          tar -C ./target/release/ -czvf ./release/lin_64_qinpel-stp.tar.gz ./qinpel-stp
+          
+      # Condition to only run this whenever the runner os is Windows
+      - name: Build Release Win
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir -p release
+          tar -C ./target/release/ -czvf ./release/win_64_qinpel-stp.tar.gz ./qinpel-stp.exe
+       
+      # This will draft a new release & will attach the binaries produced by the above outputs.
+      # You still need to publish this release though after job ends.
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
           files: |
-            target/release/lin_64_qinpel-stp
+            ./release/*.tar.gz
+            ./release/*.zip
+            ./release/*.deb
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # You don't need to add this in secrets it's by default.
