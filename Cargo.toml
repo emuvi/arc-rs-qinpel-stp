@@ -1,5 +1,7 @@
 [package]
 name = "qinpel-stp"
+description = "Qinpel Setup"
+license = "MIT"
 version = "0.1.0"
 edition = "2018"
 
