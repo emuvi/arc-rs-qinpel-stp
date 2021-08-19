@@ -65,6 +65,8 @@ jobs:
   
   lin-32:
     runs-on: ubuntu-latest
+    env:
+      PKG_CONFIG_ALLOW_CROSS: 1
     if: "contains(github.event.head_commit.message, '[Release]')"
     steps:
       - uses: actions/checkout@v2
