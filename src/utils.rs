@@ -22,6 +22,13 @@ pub fn get_arch<'a>() -> &'a str {
     }
 }
 
+pub fn get_exec_extension(from_os: &str) -> &str {
+	match from_os {
+		"win" => ".exe",
+		_ => ""
+	}
+}
+
 pub fn get_err(description: &str) -> Box<dyn std::error::Error> {
     Box::new(SimpleError::new(description))
 }
