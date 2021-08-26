@@ -4,7 +4,7 @@ pub fn run<'a>() -> ArgMatches<'a> {
 	App::new("QinpelStp")
     .version("0.2.0")
     .author("Éverton M. Vieira <everton.muvi@gmail.com>")
-    .about("QinpelStp - Setup for Qinpel")
+    .about("QinpelStp - Qinpel Setup and Step")
     .arg(
       Arg::with_name("wait")
         .short("w")
