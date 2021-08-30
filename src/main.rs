@@ -1,7 +1,7 @@
 use std::process::Command;
 use std::time::Duration;
 
-mod cli;
+mod clip;
 mod data;
 mod files;
 mod install;
@@ -18,19 +18,19 @@ fn main() {
 	let arch = utils::get_arch();
 	println!("Identified operation system: {}", os);
 	println!("Identified system architecture: {}", arch);
-	let cli = cli::run();
-	let wait_str = cli.value_of("wait").expect("You must pass a wait time.");
+	let clip = clip::run();
+	let wait_str = clip.value_of("wait").expect("You must pass a wait time.");
 	let wait = wait_str.parse().expect("You must pass a valid wait time.");
 	println!("Waiting {} milliseconds to execute.", wait);
 	std::thread::sleep(Duration::from_millis(wait));
-	if let Some(argument) = cli.value_of("install") {
+	if let Some(argument) = clip.value_of("install") {
 		if argument.len() < 6 {
 			println!(
 				"Error: Can not install this very small argument: {}",
 				argument
 			);
 		}
-		let name = &argument[5..];
+		let name = &argument[4..];
 		if argument.starts_with("app/") {
 			println!("Installing application: {}", name);
 			install_app(name);
@@ -44,7 +44,7 @@ fn main() {
 			);
 		}
 	}
-	if let Some(argument) = cli.value_of("run") {
+	if let Some(argument) = clip.value_of("run") {
 		run_cmd(os, argument);
 	}
 }
