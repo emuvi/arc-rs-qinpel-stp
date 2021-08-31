@@ -2,7 +2,7 @@ use clap::{App, Arg, ArgMatches};
 
 pub fn run<'a>() -> ArgMatches<'a> {
 	App::new("QinpelStp")
-    .version("0.2.1")
+    .version(clap::crate_version!())
     .author("Éverton M. Vieira <everton.muvi@gmail.com>")
     .about("QinpelStp - Qinpel Setup and Step")
     .arg(

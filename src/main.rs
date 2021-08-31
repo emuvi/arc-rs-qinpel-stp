@@ -97,3 +97,8 @@ fn run_cmd(os: &str, name: &str) {
 		Command::new(full_name).spawn().unwrap();
 	}
 }
+
+fn install_run(os: &str, arch: str, name: &str) {
+	install_cmd(os, arch, name);
+	run_cmd(os, name);
+}

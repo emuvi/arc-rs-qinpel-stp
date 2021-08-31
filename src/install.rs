@@ -56,9 +56,9 @@ impl Boss {
 
     fn start(&self) {
         if self.temp.exists() {
-            panic!("error: there's already a temp path");
+            panic!("Error: there's already a temp path.");
         }
-        fs::create_dir_all(&self.temp).expect("error: could not create the temp path");
+        fs::create_dir_all(&self.temp).expect("Error: could not create the temp path.");
     }
 
     fn get_index_stp(&self) -> Result<IndexStp> {
