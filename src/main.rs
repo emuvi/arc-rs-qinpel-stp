@@ -4,6 +4,7 @@ use std::time::Duration;
 mod clip;
 mod data;
 mod files;
+mod index;
 mod install;
 mod utils;
 
@@ -18,12 +19,17 @@ fn main() {
 	let arch = utils::get_arch();
 	println!("Identified operation system: {}", os);
 	println!("Identified system architecture: {}", arch);
-	let clip = clip::run();
-	let wait_str = clip.value_of("wait").expect("You must pass a wait time.");
+	let args = clip::parse();
+	let wait_str = args.value_of("wait").expect("You must pass a wait time.");
 	let wait = wait_str.parse().expect("You must pass a valid wait time.");
-	println!("Waiting {} milliseconds to execute.", wait);
-	std::thread::sleep(Duration::from_millis(wait));
-	if let Some(argument) = clip.value_of("install") {
+	if wait > 0 {
+		println!("Waiting {} milliseconds to execute.", wait);
+		std::thread::sleep(Duration::from_millis(wait));
+	}
+	if let Some(argument) = args.value_of("index") {
+		index::run(argument);
+	}
+	if let Some(argument) = args.value_of("install") {
 		if argument.len() < 6 {
 			println!(
 				"Error: Can not install this very small argument: {}",
@@ -44,8 +50,11 @@ fn main() {
 			);
 		}
 	}
-	if let Some(argument) = clip.value_of("run") {
+	if let Some(argument) = args.value_of("run") {
 		run_cmd(os, argument);
+	}
+	if let Some(argument) = args.value_of("install-run") {
+		install_run(os, arch, argument);
 	}
 }
 
@@ -91,14 +100,17 @@ fn run_cmd(os: &str, name: &str) {
 	let full_call = format!("{}", full_path.display());
 	if full_path.exists() {
 		println!("Calling full path: {}", full_call);
-		Command::new(full_call).current_dir(full_dir).spawn().unwrap();
+		Command::new(full_call)
+			.current_dir(full_dir)
+			.spawn()
+			.unwrap();
 	} else {
 		println!("Calling short path: {}", full_name);
 		Command::new(full_name).spawn().unwrap();
 	}
 }
 
-fn install_run(os: &str, arch: str, name: &str) {
+fn install_run(os: &str, arch: &str, name: &str) {
 	install_cmd(os, arch, name);
 	run_cmd(os, name);
 }
