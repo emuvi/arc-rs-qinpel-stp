@@ -14,12 +14,12 @@ const SEPARATOR: char = std::path::MAIN_SEPARATOR;
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 fn main() {
+	let args = clip::parse();
 	println!("QinpelStp starting...");
 	let os = utils::get_os();
 	let arch = utils::get_arch();
 	println!("Identified operation system: {}", os);
 	println!("Identified system architecture: {}", arch);
-	let args = clip::parse();
 	let wait_str = args.value_of("wait").expect("You must pass a wait time.");
 	let wait = wait_str.parse().expect("You must pass a valid wait time.");
 	if wait > 0 {

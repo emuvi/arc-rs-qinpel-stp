@@ -1,12 +1,12 @@
-use url;
-use url::Url;
-use std::fs;
-use std::path::PathBuf;
 use super::data::FileStp;
 use super::data::IndexStp;
 use super::files;
 use super::utils;
 use super::Result;
+use std::fs;
+use std::path::PathBuf;
+use url;
+use url::Url;
 
 const ATTEMPTS: usize = 5;
 
@@ -108,6 +108,19 @@ impl Boss {
 			destiny_path = destiny_path.replace("\\", &super::SEPARATOR.to_string());
 		}
 		let destiny_path = self.temp.join(destiny_path);
+		let destiny_parent = match destiny_path.parent() {
+			Some(destiny_path) => destiny_path,
+			None => {
+				return Err(utils::get_err(
+					"Error: Could not get the parent directory of the destiny.",
+				))
+			}
+		};
+		if fs::create_dir_all(destiny_parent).is_err() {
+			return Err(utils::get_err(
+				"Error: Could not create the parent directory Fof the destiny.",
+			));
+		}
 		let destiny = destiny_path.to_string_lossy();
 		println!("Getting file from '{}' to '{}'...", origin, destiny);
 		try_get_file(origin, destiny.as_ref(), &file_stp.verifier)?;
