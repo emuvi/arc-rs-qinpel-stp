@@ -1,7 +1,7 @@
-use std::path::Path;
-use std::path::PathBuf;
 use super::data;
 use super::files;
+use std::path::Path;
+use std::path::PathBuf;
 
 pub fn run(origin: &str) {
     println!("Indexing: '{}'...", origin);
@@ -47,7 +47,7 @@ fn index_dir(origin: &str, path: PathBuf, index: &mut data::IndexStp) {
 
 fn index_file(origin: &str, path: PathBuf, index: &mut data::IndexStp) {
     let file = format!("{}", path.display());
-    let file_path = String::from(&file[origin.len()+1..]);
+    let file_path = String::from(&file[origin.len() + 1..]);
     let file_verifier = files::get_verifier(&file).expect(&format!(
         "Error: Could not get the verifier from: '{}'.",
         path.display()
