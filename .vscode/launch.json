@@ -19,7 +19,7 @@
           "kind": "bin"
         }
       },
-      "args": ["cmds/qinpel-srv"],
+      "args": ["cmd/qinpel-srv"],
       "cwd": "${workspaceFolder}"
     },
     {

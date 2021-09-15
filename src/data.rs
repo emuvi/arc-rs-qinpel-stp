@@ -5,12 +5,12 @@ use std::fs::File;
 use std::path::PathBuf;
 use super::Result;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct IndexStp {
   pub files: Vec<FileStp>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct FileStp {
   pub path: String,
   pub verifier: String,

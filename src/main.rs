@@ -59,14 +59,14 @@ fn main() {
 }
 
 fn install_app(name: &str) {
-	let url_root = format!("{}/{}/{}/", URL_MAIN, "apps", name);
-	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "apps", SEPARATOR, name);
+	let url_root = format!("{}/{}/{}/", URL_MAIN, "app", name);
+	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "app", SEPARATOR, name);
 	install(url_root, dir_root);
 }
 
 fn install_cmd(os: &str, arch: &str, name: &str) {
-	let url_root = format!("{}/{}/{}/{}/{}/", URL_MAIN, "cmds", os, arch, name);
-	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "cmds", SEPARATOR, name);
+	let url_root = format!("{}/{}/{}/{}/{}/", URL_MAIN, "cmd", os, arch, name);
+	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "cmd", SEPARATOR, name);
 	install(url_root, dir_root);
 }
 
@@ -94,7 +94,7 @@ fn run_cmd(os: &str, name: &str) {
 	);
 	println!("Running command: {}", full_name);
 	let current_dir = std::env::current_dir().expect("Error: Could not retrieve the current dir");
-	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "cmds", SEPARATOR, name);
+	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "cmd", SEPARATOR, name);
 	let full_dir = current_dir.join(&dir_root);
 	let full_path = full_dir.join(&full_name);
 	let full_call = format!("{}", full_path.display());
