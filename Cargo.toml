@@ -1,6 +1,6 @@
 [package]
 name = "qinpel-stp"
-description = "QinpelStp - Qinpel Setup and Step"
+description = "QinpelStp - Setup and step for Qinpel applications and commands."
 repository = "https://github.com/emuvi/qinpel-stp/"
 authors = ["Éverton M. Vieira"]
 license = "LGPL-3.0-only"
