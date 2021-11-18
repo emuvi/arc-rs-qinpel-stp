@@ -4,14 +4,16 @@ description = "QinpelStp - Setup and step for Qinpel applications and commands."
 repository = "https://github.com/emuvi/qinpel-stp/"
 authors = ["Éverton M. Vieira"]
 license = "LGPL-3.0-only"
-version = "0.2.2"
+version = "0.2.5"
 edition = "2018"
 
 
 [dependencies]
 clap = "2.33"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.11", features = ["tokio-native-tls", "blocking", "stream"] }
+futures-util = "0.3.14"
 url = "2.2"
-reqwest = { version = "0.11", features = ["blocking"] }
 sha2 = "0.9"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"

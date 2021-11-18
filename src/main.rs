@@ -13,13 +13,25 @@ const SEPARATOR: char = std::path::MAIN_SEPARATOR;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<()> {
 	let args = clip::parse();
 	println!("QinpelStp starting...");
-	let os = utils::get_os();
-	let arch = utils::get_arch();
+	let os = if args.is_present("os") {
+		args.value_of("os")
+			.expect("Could not parse the OS argument.")
+	} else {
+		utils::get_os()
+	};
+	let arch = if args.is_present("arch") {
+		args.value_of("arch")
+			.expect("Could not parse the ARCH argument.")
+	} else {
+		utils::get_arch()
+	};
 	println!("Identified operation system: {}", os);
 	println!("Identified system architecture: {}", arch);
+	utils::check_os_arch(os, arch);
 	let wait_str = args.value_of("wait").expect("You must pass a wait time.");
 	let wait = wait_str.parse().expect("You must pass a valid wait time.");
 	if wait > 0 {
@@ -39,10 +51,10 @@ fn main() {
 		let name = &argument[4..];
 		if argument.starts_with("app/") {
 			println!("Installing application: {}", name);
-			install_app(name);
+			install_app(name).await;
 		} else if argument.starts_with("cmd/") {
 			println!("Installing command: {}", name);
-			install_cmd(os, arch, name);
+			install_cmd(os, arch, name).await;
 		} else {
 			println!(
 				"Error: Can not install this mal formed argument: {}",
@@ -51,26 +63,27 @@ fn main() {
 		}
 	}
 	if let Some(argument) = args.value_of("run") {
-		run_cmd(os, argument);
+		run_cmd(argument);
 	}
 	if let Some(argument) = args.value_of("install-run") {
-		install_run(os, arch, argument);
+		install_run(os, arch, argument).await;
 	}
+	Ok(())
 }
 
-fn install_app(name: &str) {
+async fn install_app(name: &str) {
 	let url_root = format!("{}/{}/{}/", URL_MAIN, "app", name);
 	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "app", SEPARATOR, name);
-	install(url_root, dir_root);
+	install(url_root, dir_root).await;
 }
 
-fn install_cmd(os: &str, arch: &str, name: &str) {
+async fn install_cmd(os: &str, arch: &str, name: &str) {
 	let url_root = format!("{}/{}/{}/{}/{}/", URL_MAIN, "cmd", os, arch, name);
 	let dir_root = format!("{}{}{}{}{}", "run", SEPARATOR, "cmd", SEPARATOR, name);
-	install(url_root, dir_root);
+	install(url_root, dir_root).await;
 }
 
-fn install(url_root: String, dir_root: String) {
+async fn install(url_root: String, dir_root: String) {
 	let url_path = url::Url::parse(&url_root).expect("Error: Could not parse the url root");
 	let current_dir = std::env::current_dir().expect("Error: Could not retrieve the current dir");
 	let destiny_path = current_dir.join(&dir_root);
@@ -78,16 +91,16 @@ fn install(url_root: String, dir_root: String) {
 	println!("Install url path: {}", url_path);
 	println!("Install destiny path: {}", destiny_path.display());
 	println!("Install temp path: {}", temp_path.display());
-	install::Boss::new(url_path, destiny_path, temp_path).run();
+	install::Boss::new(url_path, destiny_path, temp_path).run().await;
 }
 
-fn run_cmd(os: &str, name: &str) {
-	let os_extension = utils::get_exec_extension(os);
+fn run_cmd(name: &str) {
+	let exec_extension = utils::get_exec_extension();
 	let full_name = format!(
 		"{}{}",
 		name,
-		if !name.ends_with(os_extension) {
-			os_extension
+		if !name.ends_with(exec_extension) {
+			exec_extension
 		} else {
 			""
 		}
@@ -110,7 +123,7 @@ fn run_cmd(os: &str, name: &str) {
 	}
 }
 
-fn install_run(os: &str, arch: &str, name: &str) {
-	install_cmd(os, arch, name);
-	run_cmd(os, name);
+async fn install_run(os: &str, arch: &str, name: &str) {
+	install_cmd(os, arch, name).await;
+	run_cmd(name);
 }

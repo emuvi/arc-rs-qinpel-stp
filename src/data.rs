@@ -13,7 +13,8 @@ pub struct IndexStp {
 #[derive(Serialize, Deserialize)]
 pub struct FileStp {
   pub path: String,
-  pub verifier: String,
+  pub check: String,
+  pub exec: bool,
 }
 
 impl IndexStp {

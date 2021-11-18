@@ -39,10 +39,10 @@ impl Boss {
 		}
 	}
 
-	pub fn run(&self) {
+	pub async fn run(&self) {
 		self.start();
 		match self.get_index_stp() {
-			Ok(index_stp) => match self.setup(index_stp) {
+			Ok(index_stp) => match self.setup(index_stp).await {
 				Err(e) => eprintln!("{}", e),
 				_ => (),
 			},
@@ -65,9 +65,9 @@ impl Boss {
 		Ok(IndexStp::new(body)?)
 	}
 
-	fn setup(&self, index_stp: IndexStp) -> Result<()> {
+	async fn setup(&self, index_stp: IndexStp) -> Result<()> {
 		self.backup_actual()?;
-		match self.get_files(&index_stp.files) {
+		match self.get_files(&index_stp.files).await {
 			Err(e) => {
 				eprintln!("{}", e);
 				self.restore_backup()?;
@@ -87,14 +87,14 @@ impl Boss {
 		Ok(())
 	}
 
-	fn get_files(&self, files: &Vec<FileStp>) -> Result<()> {
+	async fn get_files(&self, files: &Vec<FileStp>) -> Result<()> {
 		for file in files {
-			self.get_file(file)?;
+			self.get_file(file).await?;
 		}
 		Ok(())
 	}
 
-	fn get_file(&self, file_stp: &FileStp) -> Result<()> {
+	async fn get_file(&self, file_stp: &FileStp) -> Result<()> {
 		let mut origin_path = file_stp.path.clone();
 		if origin_path.contains("\\") {
 			origin_path = origin_path.replace("\\", "/");
@@ -123,7 +123,10 @@ impl Boss {
 		}
 		let destiny = destiny_path.to_string_lossy();
 		println!("Getting file from '{}' to '{}'...", origin, destiny);
-		try_get_file(origin, destiny.as_ref(), &file_stp.verifier)?;
+		try_get_file(origin, destiny.as_ref(), &file_stp.check).await?;
+		if file_stp.exec {
+			utils::set_executable(&destiny_path);
+		}
 		Ok(())
 	}
 
@@ -193,14 +196,14 @@ fn try_get_text(url: Url) -> Result<String> {
 	}
 }
 
-fn try_get_file(url: Url, file: &str, verifier: &str) -> Result<()> {
+async fn try_get_file(url: Url, file: &str, verifier: &str) -> Result<()> {
 	let mut attempt = 1;
 	loop {
 		println!(
 			"Getting file attempt {} from '{}' to '{}'...",
 			attempt, url, file
 		);
-		match files::download_file(url.as_ref(), &file) {
+		match files::download_file(url.as_ref(), &file).await {
 			Ok(()) => match files::get_verifier(&file) {
 				Ok(verify) => {
 					if verify != verifier {

@@ -6,6 +6,24 @@ pub fn parse<'a>() -> ArgMatches<'a> {
 		.author("Éverton M. Vieira <everton.muvi@gmail.com>")
 		.about("QinpelStp - Qinpel Setup and Step")
 		.arg(
+			Arg::with_name("os")
+				.short("o")
+				.long("os")
+				.value_name("OS")
+				.takes_value(true)
+				.required(false)
+				.help("For what operation system should I setup?"),
+		)
+		.arg(
+			Arg::with_name("arch")
+				.short("a")
+				.long("arch")
+				.value_name("ARCH")
+				.takes_value(true)
+				.required(false)
+				.help("For what architecture should I setup?"),
+		)
+		.arg(
 			Arg::with_name("wait")
 				.short("w")
 				.long("wait")
