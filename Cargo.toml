@@ -1,6 +1,6 @@
 [package]
 name = "qinpel-stp"
-description = "QinpelStp - Setup and step for Qinpel applications and commands."
+description = "Qinpel Setup - Transfer, install and executes distribution bundles of graphical user and command line applications for the Qinpel (Quick Interface for Pointel) Platform."
 repository = "https://github.com/emuvi/qinpel-stp/"
 authors = ["Éverton M. Vieira"]
 license = "LGPL-3.0-only"
