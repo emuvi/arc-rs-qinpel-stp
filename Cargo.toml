@@ -4,7 +4,7 @@ description = "Qinpel Setup - Transfer, install and executes distribution bundle
 repository = "https://github.com/emuvi/qinpel-stp/"
 authors = ["Éverton M. Vieira"]
 license = "LGPL-3.0-only"
-version = "0.2.5"
+version = "0.1.0"
 edition = "2018"
 
 
