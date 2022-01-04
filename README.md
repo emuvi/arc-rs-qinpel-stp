@@ -1,4 +1,3 @@
-QinpelStp
-=========
+# QinpelStp
 
-Qinpel Setup - Transfer, install and executes distribution bundles of graphical user and command line applications for the Qinpel (Quick Interface for Pointel) Platform.
+QinpelStp ( Qinpel Setup ) is a command that transfers, installs and executes selected bundles of graphical user applications and command interfaces for the Qinpel, the Quick Interface for Pointel platform.
