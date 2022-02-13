@@ -3,8 +3,8 @@ use clap::{App, Arg, ArgMatches};
 pub fn parse<'a>() -> ArgMatches<'a> {
 	App::new("QinpelStp")
 		.version(clap::crate_version!())
+		.about("QinpelStp ( Qinpel Setup ) is a command program that transfers, installs and executes selected bundles of user interfaces and command programs for the Qinpel, the Quick Interface for Pointel platform.")
 		.author("Éverton M. Vieira <everton.muvi@gmail.com>")
-		.about("QinpelStp - Qinpel Setup and Step")
 		.arg(
 			Arg::with_name("os")
 				.short("o")
