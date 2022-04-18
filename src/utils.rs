@@ -60,11 +60,11 @@ pub fn is_executable(path: &PathBuf) -> bool {
 
 #[cfg(unix)]
 pub fn is_executable(path: &PathBuf) -> bool {
-    if (path.is_file()) {
+    if path.is_file() {
         use std::os::unix::fs::MetadataExt;
-        let meta = std::fs::metadata(path);
+        let meta = std::fs::metadata(path).unwrap();
         let mode = meta.mode();
-        return mode & 0o111;
+        return mode & 0o111 == 0o111;
     }
     false
 }
@@ -73,5 +73,5 @@ pub fn set_executable(_path: &PathBuf) {}
 
 #[cfg(unix)]
 pub fn set_executable(path: &PathBuf) {
-    std::fs::set_permissions(destiny, std::os::unix::fs::PermissionsExt::from_mode(0o753));
+    std::fs::set_permissions(path, std::os::unix::fs::PermissionsExt::from_mode(0o753)).unwrap();
 }

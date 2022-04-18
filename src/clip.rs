@@ -1,13 +1,13 @@
-use clap::{App, Arg, ArgMatches};
+use clap::{Arg, ArgMatches, Command};
 
-pub fn parse<'a>() -> ArgMatches<'a> {
-	App::new("QinpelStp")
+pub fn parse() -> ArgMatches {
+    Command::new("QinpelStp")
 		.version(clap::crate_version!())
 		.about("QinpelStp ( Qinpel Setup ) is a command program that transfers, installs and executes selected bundles of user interfaces and command programs for the Qinpel, the Quick Interface for Pointel platform.")
 		.author("Éverton M. Vieira <everton.muvi@gmail.com>")
 		.arg(
-			Arg::with_name("os")
-				.short("o")
+			Arg::new("os")
+				.short('o')
 				.long("os")
 				.value_name("OS")
 				.takes_value(true)
@@ -15,8 +15,8 @@ pub fn parse<'a>() -> ArgMatches<'a> {
 				.help("For what operation system should I setup?"),
 		)
 		.arg(
-			Arg::with_name("arch")
-				.short("a")
+			Arg::new("arch")
+				.short('a')
 				.long("arch")
 				.value_name("ARCH")
 				.takes_value(true)
@@ -24,8 +24,8 @@ pub fn parse<'a>() -> ArgMatches<'a> {
 				.help("For what architecture should I setup?"),
 		)
 		.arg(
-			Arg::with_name("wait")
-				.short("w")
+			Arg::new("wait")
+				.short('w')
 				.long("wait")
 				.value_name("NUMBER")
 				.default_value("0")
@@ -34,8 +34,8 @@ pub fn parse<'a>() -> ArgMatches<'a> {
 				.help("How long should I wait before to execute?"),
 		)
 		.arg(
-			Arg::with_name("index")
-				.short("n")
+			Arg::new("index")
+				.short('n')
 				.long("index")
 				.value_name("PATH")
 				.takes_value(true)
@@ -43,8 +43,8 @@ pub fn parse<'a>() -> ArgMatches<'a> {
 				.help("What path should I index?"),
 		)
 		.arg(
-			Arg::with_name("install")
-				.short("i")
+			Arg::new("install")
+				.short('i')
 				.long("install")
 				.value_name("TYPE/NAME")
 				.takes_value(true)
@@ -52,8 +52,8 @@ pub fn parse<'a>() -> ArgMatches<'a> {
 				.help("What app or cmd should I install?"),
 		)
 		.arg(
-			Arg::with_name("run")
-				.short("r")
+			Arg::new("run")
+				.short('r')
 				.long("run")
 				.value_name("CMD")
 				.takes_value(true)
@@ -61,8 +61,8 @@ pub fn parse<'a>() -> ArgMatches<'a> {
 				.help("What command should I run?"),
 		)
 		.arg(
-			Arg::with_name("install-run")
-				.short("x")
+			Arg::new("install-run")
+				.short('x')
 				.long("install-run")
 				.value_name("CMD")
 				.takes_value(true)
