@@ -4,7 +4,7 @@ pub fn parse() -> ArgMatches {
     Command::new("QinpelStp")
 		.version(clap::crate_version!())
 		.about("QinpelStp ( Qinpel Setup ) is a command program that transfers, installs and executes selected bundles of user interfaces and command programs for the Qinpel, the Quick Interface for Pointel platform.")
-		.author("Éverton M. Vieira <everton.muvi@gmail.com>")
+		.author("Éverton M. Vieira <emuvi@outlook.com.br>")
 		.arg(
 			Arg::new("os")
 				.short('o')
